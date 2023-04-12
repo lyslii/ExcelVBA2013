@@ -1,0 +1,51 @@
+' EXCEL VBA 2013
+
+Private Sub UserForm_Initialize()
+    Dim ws As Worksheet
+    Dim tbl As ListObject
+    Dim header As Range
+
+    ' Spécifiez la feuille de calcul et le nom du tableau
+    Set ws = ActiveSheet
+    Set tbl = ws.ListObjects("Tableau2")
+
+    ' Ajoutez les noms de colonne au ComboBox
+    For Each header In tbl.HeaderRowRange
+        ColumnCombobox.AddItem header.Value
+    Next header
+End Sub
+
+Private Sub filterButton_Click()
+  Dim ws As Worksheet
+  Dim tbl As ListObject
+  Dim columnName As String
+  Dim filterValue As Variant
+
+  ' Spécifiez la feuille de calcul et le nom du tableau
+  Set ws = ActiveSheet
+  Set tbl = ws.ListObjects("Tableau2")
+
+  ' Obtenez la colonne sélectionnée et le critère de filtrage
+  columnName = ColumnCombobox.Value
+  filterValue = filterTextBox.Value
+
+  ' Appliquer le filtre
+  If columnName <> "" And filterValue <> "" Then
+    tbl.Range.AutoFilter Field:=Application.WorksheetFunction.Match(columnName, tbl.HeaderRowRange, 0), Criteria1:=filterValue
+  Else
+    MsgBox "Veuillez sélectionner une colonne et entrer un critère de filtrage."
+  End If
+End Sub
+
+Private Sub UserForm_QueryClose(Cancel As Integer, CloseMode As Integer)
+  'Effacer le filtre lorsqu'on ferme un Userform
+  Dim ws As Worksheet
+  Dim tbl As ListObject
+    
+  Set ws = ActiveSheet
+  Set tbl = ws.ListObjects("Tableau2")
+    
+  If tbl.ShowAutoFilter Then
+    tbl.AutoFilter.ShowAllData
+   End If
+End Sub
